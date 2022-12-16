@@ -1,0 +1,1 @@
+/root/rpmbuild/BUILD/kernel-5.14.0-162.6.1.el9_1/linux-5.14.0-162.6.1.el9.x86_64/tools/power/x86/intel-speed-select/../../../../include/uapi/linux/thermal.h

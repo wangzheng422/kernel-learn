@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-daemon</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-daemon</refname>
+  <refpurpose>Run record sessions on background</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf daemon</emphasis>
+<emphasis>perf daemon</emphasis> [&lt;options&gt;]
+<emphasis>perf daemon start</emphasis>  [&lt;options&gt;]
+<emphasis>perf daemon stop</emphasis>   [&lt;options&gt;]
+<emphasis>perf daemon signal</emphasis> [&lt;options&gt;]
+<emphasis>perf daemon ping</emphasis>   [&lt;options&gt;]</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>This command allows to run simple daemon process that starts and
+monitors configured record sessions.</simpara>
+<simpara>You can imagine <emphasis>perf daemon</emphasis> of background process with several
+<emphasis>perf record</emphasis> child tasks, like:</simpara>
+<literallayout class="monospaced"># ps axjf
+...
+     1  916507 ... perf daemon start
+916507  916508 ...  \_ perf record --control=fifo:control,ack -m 10M -e cycles --overwrite --switch-output -a
+916507  916509 ...  \_ perf record --control=fifo:control,ack -m 20M -e sched:* --overwrite --switch-output -a</literallayout>
+<simpara>Not every <emphasis>perf record</emphasis> session is suitable for running under daemon.
+User need perf session that either produces data on query, like the
+flight recorder sessions in above example or session that is configured
+to produce data periodically, like with --switch-output configuration
+for time and size.</simpara>
+<simpara>Each session is started with control setup (with perf record --control
+options).</simpara>
+<simpara>Sessions are configured through config file, see CONFIG FILE section
+with EXAMPLES.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--config=&lt;PATH&gt;
+</term>
+<listitem>
+<simpara>
+        Config file path. If not provided, perf will check system and default
+        locations (/etc/perfconfig, $HOME/.perfconfig).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--base=&lt;PATH&gt;
+</term>
+<listitem>
+<simpara>
+        Base directory path. Each daemon instance is running on top
+        of base directory. Only one instance of server can run on
+        top of one directory at the time.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+<simpara>All generic options are available also under commands.</simpara>
+</refsect1>
+<refsect1 id="_start_command">
+<title>START COMMAND</title>
+<simpara>The start command creates the daemon process.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--foreground
+</term>
+<listitem>
+<simpara>
+        Do not put the process in background.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_stop_command">
+<title>STOP COMMAND</title>
+<simpara>The stop command stops all the session and the daemon process.</simpara>
+</refsect1>
+<refsect1 id="_signal_command">
+<title>SIGNAL COMMAND</title>
+<simpara>The signal command sends signal to configured sessions.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+--session
+</term>
+<listitem>
+<simpara>
+        Send signal to specific session.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_ping_command">
+<title>PING COMMAND</title>
+<simpara>The ping command sends control ping to configured sessions.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+--session
+</term>
+<listitem>
+<simpara>
+        Send ping to specific session.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_config_file">
+<title>CONFIG FILE</title>
+<simpara>The daemon is configured within standard perf config file by
+following new variables:</simpara>
+<simpara>daemon.base:
+        Base path for daemon data. All sessions data are
+        stored under this path.</simpara>
+<simpara>session-&lt;NAME&gt;.run:
+        Defines new record session. The value is record&#8217;s command
+        line without the <emphasis>record</emphasis> keyword.</simpara>
+<simpara>Each perf record session is run in daemon.base/&lt;NAME&gt; directory.</simpara>
+</refsect1>
+<refsect1 id="_examples">
+<title>EXAMPLES</title>
+<simpara>Example with 2 record sessions:</simpara>
+<literallayout class="monospaced"># cat ~/.perfconfig
+[daemon]
+base=/opt/perfdata</literallayout>
+<literallayout class="monospaced">[session-cycles]
+run = -m 10M -e cycles --overwrite --switch-output -a</literallayout>
+<literallayout class="monospaced">[session-sched]
+run = -m 20M -e sched:* --overwrite --switch-output -a</literallayout>
+<simpara>Starting the daemon:</simpara>
+<literallayout class="monospaced"># perf daemon start</literallayout>
+<simpara>Check sessions:</simpara>
+<literallayout class="monospaced"># perf daemon
+[603349:daemon] base: /opt/perfdata
+[603350:cycles] perf record -m 10M -e cycles --overwrite --switch-output -a
+[603351:sched] perf record -m 20M -e sched:* --overwrite --switch-output -a</literallayout>
+<simpara>First line is daemon process info with configured daemon base.</simpara>
+<simpara>Check sessions with more info:</simpara>
+<literallayout class="monospaced"># perf daemon -v
+[603349:daemon] base: /opt/perfdata
+  output:  /opt/perfdata/output
+  lock:    /opt/perfdata/lock
+  up:      1 minutes
+[603350:cycles] perf record -m 10M -e cycles --overwrite --switch-output -a
+  base:    /opt/perfdata/session-cycles
+  output:  /opt/perfdata/session-cycles/output
+  control: /opt/perfdata/session-cycles/control
+  ack:     /opt/perfdata/session-cycles/ack
+  up:      1 minutes
+[603351:sched] perf record -m 20M -e sched:* --overwrite --switch-output -a
+  base:    /opt/perfdata/session-sched
+  output:  /opt/perfdata/session-sched/output
+  control: /opt/perfdata/session-sched/control
+  ack:     /opt/perfdata/session-sched/ack
+  up:      1 minutes</literallayout>
+<simpara>The <emphasis>base</emphasis> path is daemon/session base.
+The <emphasis>lock</emphasis> file is daemon&#8217;s lock file guarding that no other
+daemon is running on top of the base.
+The <emphasis>output</emphasis> file is perf record output for specific session.
+The <emphasis>control</emphasis> and <emphasis>ack</emphasis> files are perf control files.
+The <emphasis>up</emphasis> number shows minutes daemon/session is running.</simpara>
+<simpara>Make sure control session is online:</simpara>
+<literallayout class="monospaced"># perf daemon ping
+OK   cycles
+OK   sched</literallayout>
+<simpara>Send USR2 signal to session <emphasis>cycles</emphasis> to generate perf.data file:</simpara>
+<literallayout class="monospaced"># perf daemon signal --session cycles
+signal 12 sent to session 'cycles [603452]'</literallayout>
+<literallayout class="monospaced"># tail -2  /opt/perfdata/session-cycles/output
+[ perf record: dump data: Woken up 1 times ]
+[ perf record: Dump perf.data.2020123017013149 ]</literallayout>
+<simpara>Send USR2 signal to all sessions:</simpara>
+<literallayout class="monospaced"># perf daemon signal
+signal 12 sent to session 'cycles [603452]'
+signal 12 sent to session 'sched [603453]'</literallayout>
+<literallayout class="monospaced"># tail -2  /opt/perfdata/session-cycles/output
+[ perf record: dump data: Woken up 1 times ]
+[ perf record: Dump perf.data.2020123017024689 ]
+# tail -2  /opt/perfdata/session-sched/output
+[ perf record: dump data: Woken up 1 times ]
+[ perf record: Dump perf.data.2020123017024713 ]</literallayout>
+<simpara>Stop daemon:</simpara>
+<literallayout class="monospaced"># perf daemon stop</literallayout>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-config</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

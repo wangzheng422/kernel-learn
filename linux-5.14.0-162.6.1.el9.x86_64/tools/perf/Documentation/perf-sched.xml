@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-sched</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-sched</refname>
+  <refpurpose>Tool to trace/measure scheduler properties (latencies)</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf sched</emphasis> {record|latency|map|replay|script|timehist}</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>There are several variants of <emphasis>perf sched</emphasis>:</simpara>
+<literallayout class="monospaced">'perf sched record &lt;command&gt;' to record the scheduling events
+of an arbitrary workload.</literallayout>
+<literallayout class="monospaced">'perf sched latency' to report the per task scheduling latencies
+and other scheduling properties of the workload.</literallayout>
+<literallayout class="monospaced">'perf sched script' to see a detailed trace of the workload that
+ was recorded (aliased to 'perf script' for now).</literallayout>
+<literallayout class="monospaced">'perf sched replay' to simulate the workload that was recorded
+via perf sched record. (this is done by starting up mockup threads
+that mimic the workload based on the events in the trace. These
+threads can then replay the timings (CPU runtime and sleep patterns)
+of the workload as it occurred when it was recorded - and can repeat
+it a number of times, measuring its performance.)</literallayout>
+<literallayout class="monospaced">'perf sched map' to print a textual context-switching outline of
+workload captured via perf sched record.  Columns stand for
+individual CPUs, and the two-letter shortcuts stand for tasks that
+are running on a CPU. A '*' denotes the CPU that had the event, and
+a dot signals an idle CPU.</literallayout>
+<literallayout class="monospaced">'perf sched timehist' provides an analysis of scheduling events.</literallayout>
+<literallayout class="monospaced">Example usage:
+    perf sched record -- sleep 1
+    perf sched timehist</literallayout>
+<literallayout class="monospaced">By default it shows the individual schedule events, including the wait
+time (time between sched-out and next sched-in events for the task), the
+task scheduling delay (time between wakeup and actually running) and run
+time for the task:</literallayout>
+<literallayout class="monospaced">            time    cpu  task name             wait time  sch delay   run time
+                         [tid/pid]                (msec)     (msec)     (msec)
+  -------------- ------  --------------------  ---------  ---------  ---------
+    79371.874569 [0011]  gcc[31949]                0.014      0.000      1.148
+    79371.874591 [0010]  gcc[31951]                0.000      0.000      0.024
+    79371.874603 [0010]  migration/10[59]          3.350      0.004      0.011
+    79371.874604 [0011]  &lt;idle&gt;                    1.148      0.000      0.035
+    79371.874723 [0005]  &lt;idle&gt;                    0.016      0.000      1.383
+    79371.874746 [0005]  gcc[31949]                0.153      0.078      0.022
+...</literallayout>
+<literallayout class="monospaced">Times are in msec.usec.</literallayout>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        Input file name. (default: perf.data unless stdin is a fifo)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose. (show symbol address, etc)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D
+</term>
+<term>
+--dump-raw-trace=
+</term>
+<listitem>
+<simpara>
+        Display verbose dump of the sched data.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t complain, do it.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_options_for_emphasis_perf_sched_map_emphasis">
+<title>OPTIONS for <emphasis>perf sched map</emphasis></title>
+<variablelist>
+<varlistentry>
+<term>
+--compact
+</term>
+<listitem>
+<simpara>
+        Show only CPUs with activity. Helps visualizing on high core
+        count systems.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--cpus
+</term>
+<listitem>
+<simpara>
+        Show just entries with activities for the given CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--color-cpus
+</term>
+<listitem>
+<simpara>
+        Highlight the given cpus.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--color-pids
+</term>
+<listitem>
+<simpara>
+        Highlight the given pids.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_options_for_emphasis_perf_sched_timehist_emphasis">
+<title>OPTIONS for <emphasis>perf sched timehist</emphasis></title>
+<variablelist>
+<varlistentry>
+<term>
+-k
+</term>
+<term>
+--vmlinux=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+    vmlinux pathname
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--kallsyms=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+    kallsyms pathname
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-g
+</term>
+<term>
+--call-graph
+</term>
+<listitem>
+<simpara>
+        Display call chains if present (default on).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--max-stack
+</term>
+<listitem>
+<simpara>
+        Maximum number of functions to display in backtrace, default 5.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C=
+</term>
+<term>
+--cpu=
+</term>
+<listitem>
+<simpara>
+        Only show events for the given CPU(s) (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-p=
+</term>
+<term>
+--pid=
+</term>
+<listitem>
+<simpara>
+        Only show events for given process ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-t=
+</term>
+<term>
+--tid=
+</term>
+<listitem>
+<simpara>
+        Only show events for given thread ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-s
+</term>
+<term>
+--summary
+</term>
+<listitem>
+<simpara>
+    Show only a summary of scheduling by thread with min, max, and average
+    run times (in sec) and relative stddev.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-S
+</term>
+<term>
+--with-summary
+</term>
+<listitem>
+<simpara>
+    Show all scheduling events followed by a summary by thread with min,
+    max, and average run times (in sec) and relative stddev.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--symfs=&lt;directory&gt;
+</term>
+<listitem>
+<simpara>
+    Look for files with symbols relative to this directory.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-V
+</term>
+<term>
+--cpu-visual
+</term>
+<listitem>
+<simpara>
+        Show visual aid for sched switches by CPU: <emphasis>i</emphasis> marks idle time,
+        <emphasis>s</emphasis> are scheduler events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-w
+</term>
+<term>
+--wakeups
+</term>
+<listitem>
+<simpara>
+        Show wakeup events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-M
+</term>
+<term>
+--migrations
+</term>
+<listitem>
+<simpara>
+        Show migration events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-n
+</term>
+<term>
+--next
+</term>
+<listitem>
+<simpara>
+        Show next task.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-I
+</term>
+<term>
+--idle-hist
+</term>
+<listitem>
+<simpara>
+        Show idle-related events only.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--time
+</term>
+<listitem>
+<simpara>
+        Only analyze samples within given time window: &lt;start&gt;,&lt;stop&gt;. Times
+        have the format seconds.microseconds. If start is not given (i.e., time
+        string is <emphasis>,x.y</emphasis>) then analysis starts at the beginning of the file. If
+        stop time is not given (i.e, time string is <emphasis>x.y,</emphasis>) then analysis goes
+        to end of file.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--state
+</term>
+<listitem>
+<simpara>
+        Show task state when it switched out.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

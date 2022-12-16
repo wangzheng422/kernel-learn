@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-annotate</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-annotate</refname>
+  <refpurpose>Read perf.data (created by perf record) and display annotated code</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf annotate</emphasis> [-i &lt;file&gt; | --input=file] [symbol_name]</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>This command reads the input file and displays an annotated version of the
+code. If the object file has debug symbols then the source code will be
+displayed alongside assembly code.</simpara>
+<simpara>If there is no debug info in the object, then annotated assembly is displayed.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        Input file name. (default: perf.data unless stdin is a fifo)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-d
+</term>
+<term>
+--dsos=&lt;dso[,dso&#8230;]&gt;
+</term>
+<listitem>
+<simpara>
+        Only consider symbols in these dsos.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-s
+</term>
+<term>
+--symbol=&lt;symbol&gt;
+</term>
+<listitem>
+<simpara>
+        Symbol to annotate.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t do ownership validation.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose. (Show symbol address, etc)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-q
+</term>
+<term>
+--quiet
+</term>
+<listitem>
+<simpara>
+        Do not show any message.  (Suppress -v)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-n
+</term>
+<term>
+--show-nr-samples
+</term>
+<listitem>
+<simpara>
+        Show the number of samples for each symbol
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D
+</term>
+<term>
+--dump-raw-trace
+</term>
+<listitem>
+<simpara>
+        Dump raw trace in ASCII.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-k
+</term>
+<term>
+--vmlinux=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        vmlinux pathname.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--ignore-vmlinux
+</term>
+<listitem>
+<simpara>
+        Ignore vmlinux files.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--itrace
+</term>
+<listitem>
+<simpara>
+        Options for decoding instruction tracing data. The options are:
+</simpara>
+<literallayout class="monospaced">i       synthesize instructions events
+b       synthesize branches events (branch misses for Arm SPE)
+c       synthesize branches events (calls only)
+r       synthesize branches events (returns only)
+x       synthesize transactions events
+w       synthesize ptwrite events
+p       synthesize power events (incl. PSB events for Intel PT)
+o       synthesize other events recorded due to the use
+        of aux-output (refer to perf record)
+e       synthesize error events
+d       create a debug log
+f       synthesize first level cache events
+m       synthesize last level cache events
+M       synthesize memory events
+t       synthesize TLB events
+a       synthesize remote access events
+g       synthesize a call chain (use with i or x)
+G       synthesize a call chain on existing event records
+l       synthesize last branch entries (use with i or x)
+L       synthesize last branch entries on existing event records
+s       skip initial number of events
+q       quicker (less detailed) decoding
+A       approximate IPC
+Z       prefer to ignore timestamps (so-called "timeless" decoding)</literallayout>
+<literallayout class="monospaced">The default is all events i.e. the same as --itrace=ibxwpe,
+except for perf script where it is --itrace=ce</literallayout>
+<literallayout class="monospaced">In addition, the period (default 100000, except for perf script where it is 1)
+for instructions events can be specified in units of:</literallayout>
+<literallayout class="monospaced">i       instructions
+t       ticks
+ms      milliseconds
+us      microseconds
+ns      nanoseconds (default)</literallayout>
+<literallayout class="monospaced">Also the call chain size (default 16, max. 1024) for instructions or
+transactions events can be specified.</literallayout>
+<literallayout class="monospaced">Also the number of last branch entries (default 64, max. 1024) for
+instructions or transactions events can be specified.</literallayout>
+<literallayout class="monospaced">Similar to options g and l, size may also be specified for options G and L.
+On x86, note that G and L work poorly when data has been recorded with
+large PEBS. Refer linkperf:perf-intel-pt[1] man page for details.</literallayout>
+<literallayout class="monospaced">It is also possible to skip events generated (instructions, branches, transactions,
+ptwrite, power) at the beginning. This is useful to ignore initialization code.</literallayout>
+<literallayout class="monospaced">--itrace=i0nss1000000</literallayout>
+<literallayout class="monospaced">skips the first million instructions.</literallayout>
+<literallayout class="monospaced">The 'e' option may be followed by flags which affect what errors will or
+will not be reported. Each flag must be preceded by either '+' or '-'.
+The flags are:
+        o       overflow
+        l       trace data lost</literallayout>
+<literallayout class="monospaced">If supported, the 'd' option may be followed by flags which affect what
+debug messages will or will not be logged. Each flag must be preceded
+by either '+' or '-'. The flags are:
+        a       all perf events
+        o       output to stdout</literallayout>
+<literallayout class="monospaced">If supported, the 'q' option may be repeated to increase the effect.</literallayout>
+<literallayout class="monospaced">To disable decoding entirely, use --no-itrace.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-m
+</term>
+<term>
+--modules
+</term>
+<listitem>
+<simpara>
+        Load module symbols. WARNING: use only with -k and LIVE kernel.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-l
+</term>
+<term>
+--print-line
+</term>
+<listitem>
+<simpara>
+        Print matching source lines (may be slow).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-P
+</term>
+<term>
+--full-paths
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t shorten the displayed pathnames.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stdio
+</term>
+<listitem>
+<simpara>
+Use the stdio interface.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stdio2
+</term>
+<listitem>
+<simpara>
+Use the stdio2 interface, non-interactive, uses the TUI formatting.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stdio-color=&lt;mode&gt;
+</term>
+<listitem>
+<simpara>
+        <emphasis>always</emphasis>, <emphasis>never</emphasis> or <emphasis>auto</emphasis>, allowing configuring color output
+        via the command line, in addition to via "color.ui" .perfconfig.
+        Use <emphasis>--stdio-color always</emphasis> to generate color even when redirecting
+        to a pipe or file. Using just <emphasis>--stdio-color</emphasis> is equivalent to
+        using <emphasis>always</emphasis>.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--tui
+</term>
+<listitem>
+<simpara>
+Use the TUI interface. Use of --tui requires a tty, if one is not
+        present, as when piping to other commands, the stdio interface is
+        used. This interfaces starts by centering on the line with more
+        samples, TAB/UNTAB cycles through the lines with more samples.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--gtk
+</term>
+<listitem>
+<simpara>
+Use the GTK interface.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C
+</term>
+<term>
+--cpu=&lt;cpu&gt;
+</term>
+<listitem>
+<simpara>
+Only report samples for the list of CPUs provided. Multiple CPUs can
+        be provided as a comma-separated list with no space: 0,1. Ranges of
+        CPUs are specified with -: 0-2. Default is to report samples on all
+        CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--asm-raw
+</term>
+<listitem>
+<simpara>
+        Show raw instruction encoding of assembly instructions.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--show-total-period
+</term>
+<listitem>
+<simpara>
+Show a column with the sum of periods.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--source
+</term>
+<listitem>
+<simpara>
+        Interleave source code with assembly code. Enabled by default,
+        disable with --no-source.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--symfs=&lt;directory&gt;
+</term>
+<listitem>
+<simpara>
+        Look for files with symbols relative to this directory.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-M
+</term>
+<term>
+--disassembler-style=
+</term>
+<listitem>
+<simpara>
+Set disassembler style for objdump.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--objdump=&lt;path&gt;
+</term>
+<listitem>
+<simpara>
+        Path to objdump binary.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--prefix=PREFIX
+</term>
+<term>
+--prefix-strip=N
+</term>
+<listitem>
+<simpara>
+        Remove first N entries from source file path names in executables
+        and add PREFIX. This allows to display source code compiled on systems
+        with different file system layout.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--skip-missing
+</term>
+<listitem>
+<simpara>
+        Skip symbols that cannot be annotated.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--group
+</term>
+<listitem>
+<simpara>
+        Show event group information together
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--demangle
+</term>
+<listitem>
+<simpara>
+        Demangle symbol names to human readable form. It&#8217;s enabled by default,
+        disable with --no-demangle.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--demangle-kernel
+</term>
+<listitem>
+<simpara>
+        Demangle kernel symbol names to human readable form (for C++ kernels).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--percent-type
+</term>
+<listitem>
+<simpara>
+        Set annotation percent type from following choices:
+          global-period, local-period, global-hits, local-hits
+</simpara>
+<literallayout class="monospaced">The local/global keywords set if the percentage is computed
+in the scope of the function (local) or the whole data (global).
+The period/hits keywords set the base the percentage is computed
+on - the samples period or the number of samples (hits).</literallayout>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-report</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

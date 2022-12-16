@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-mem</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-mem</refname>
+  <refpurpose>Profile memory accesses</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf mem</emphasis> [&lt;options&gt;] (record [&lt;command&gt;] | report)</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>"perf mem record" runs a command and gathers memory operation data
+from it, into perf.data. Perf record options are accepted and are passed through.</simpara>
+<simpara>"perf mem report" displays the result. It invokes perf report with the
+right set of options to display a memory access profile. By default, loads
+and stores are sampled. Use the -t option to limit to loads or stores.</simpara>
+<simpara>Note that on Intel systems the memory latency reported is the use-latency,
+not the pure load (or store latency). Use latency includes any pipeline
+queueing delays in addition to the memory subsystem latency.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+&lt;command&gt;&#8230;
+</term>
+<listitem>
+<simpara>
+        Any command you can specify in a shell.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        Input file name.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t do ownership validation
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-t
+</term>
+<term>
+--type=&lt;type&gt;
+</term>
+<listitem>
+<simpara>
+        Select the memory operation type: load or store (default: load,store)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D
+</term>
+<term>
+--dump-raw-samples
+</term>
+<listitem>
+<simpara>
+        Dump the raw decoded samples on the screen in a format that is easy to parse with
+        one sample per line.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-x
+</term>
+<term>
+--field-separator=&lt;separator&gt;
+</term>
+<listitem>
+<simpara>
+        Specify the field separator used when dump raw samples (-D option). By default,
+        The separator is the space character.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C
+</term>
+<term>
+--cpu=&lt;cpu&gt;
+</term>
+<listitem>
+<simpara>
+        Monitor only on the list of CPUs provided. Multiple CPUs can be provided as a
+        comma-separated list with no space: 0,1. Ranges of CPUs are specified with -: 0-2. Default
+        is to monitor all CPUS.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-U
+</term>
+<term>
+--hide-unresolved
+</term>
+<listitem>
+<simpara>
+        Only display entries resolved to a symbol.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-p
+</term>
+<term>
+--phys-data
+</term>
+<listitem>
+<simpara>
+        Record/Report sample physical addresses
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--data-page-size
+</term>
+<listitem>
+<simpara>
+        Record/Report sample data address page size
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_record_options">
+<title>RECORD OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-e
+</term>
+<term>
+--event &lt;event&gt;
+</term>
+<listitem>
+<simpara>
+        Event selector. Use <emphasis>perf mem record -e list</emphasis> to list available events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-K
+</term>
+<term>
+--all-kernel
+</term>
+<listitem>
+<simpara>
+        Configure all used events to run in kernel space.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-U
+</term>
+<term>
+--all-user
+</term>
+<listitem>
+<simpara>
+        Configure all used events to run in user space.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose (show counter open errors, etc)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--ldlat &lt;n&gt;
+</term>
+<listitem>
+<simpara>
+        Specify desired latency for loads event. (x86 only)
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+<simpara>In addition, for report all perf report options are valid, and for record
+all perf record options.</simpara>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-report</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

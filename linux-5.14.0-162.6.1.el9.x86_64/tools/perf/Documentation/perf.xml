@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf</refname>
+  <refpurpose>Performance analysis tools for Linux</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf</emphasis> [--version] [--help] [OPTIONS] COMMAND [ARGS]</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-h
+</term>
+<term>
+--help
+</term>
+<listitem>
+<simpara>
+        Run perf help command.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--version
+</term>
+<listitem>
+<simpara>
+        Display perf version.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-vv
+</term>
+<listitem>
+<simpara>
+        Print the compiled-in status of libraries.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--exec-path
+</term>
+<listitem>
+<simpara>
+        Display or set exec path.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--html-path
+</term>
+<listitem>
+<simpara>
+        Display html documentation path.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-p
+</term>
+<term>
+--paginate
+</term>
+<listitem>
+<simpara>
+        Set up pager.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--no-pager
+</term>
+<listitem>
+<simpara>
+        Do not set pager.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--buildid-dir
+</term>
+<listitem>
+<simpara>
+        Setup buildid cache directory. It has higher priority
+        than buildid.dir config file option.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--list-cmds
+</term>
+<listitem>
+<simpara>
+        List the most commonly used perf commands.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--list-opts
+</term>
+<listitem>
+<simpara>
+        List available perf options.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--debugfs-dir
+</term>
+<listitem>
+<simpara>
+        Set debugfs directory or set environment variable PERF_DEBUGFS_DIR.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--debug
+</term>
+<listitem>
+<simpara>
+        Setup debug variable (see list below) in value
+        range (0, 10). Use like:
+          --debug verbose   # sets verbose = 1
+          --debug verbose=2 # sets verbose = 2
+</simpara>
+<literallayout class="monospaced">List of debug variables allowed to set:
+  verbose          - general debug messages
+  ordered-events   - ordered events object debug messages
+  data-convert     - data convert command debug messages
+  stderr           - write debug output (option -v) to stderr
+                     in browser mode
+  perf-event-open  - Print perf_event_open() arguments and
+                     return value</literallayout>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>Performance counters for Linux are a new kernel-based subsystem
+that provide a framework for all things performance analysis. It
+covers hardware level (CPU/PMU, Performance Monitoring Unit) features
+and software features (software counters, tracepoints) as well.</simpara>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-stat</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-top</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-report</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-list</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+<simpara><citerefentry>
+<refentrytitle>perf-annotate</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,<citerefentry>
+<refentrytitle>perf-archive</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-bench</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-buildid-cache</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-buildid-list</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-c2c</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-config</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-data</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-diff</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-evlist</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-ftrace</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-help</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-inject</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-intel-pt</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-iostat</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-kallsyms</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-kmem</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-kvm</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-lock</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-mem</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-probe</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-sched</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-script</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-test</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-trace</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-version</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

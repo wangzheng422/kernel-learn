@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-trace</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-trace</refname>
+  <refpurpose>strace inspired tool</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf trace</emphasis>
+<emphasis>perf trace record</emphasis></literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>This command will show the events associated with the target, initially
+syscalls, but other system events like pagefaults, task lifetime events,
+scheduling events, etc.</simpara>
+<simpara>This is a live mode tool in addition to working with perf.data files like
+the other perf tools. Files can be generated using the <emphasis>perf record</emphasis> command
+but the session needs to include the raw_syscalls events (-e <emphasis>raw_syscalls:*</emphasis>).
+Alternatively, <emphasis>perf trace record</emphasis> can be used as a shortcut to
+automatically include the raw_syscalls events when writing events to a file.</simpara>
+<simpara>The following options apply to perf trace; options to perf trace record are
+found in the perf record man page.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-a
+</term>
+<term>
+--all-cpus
+</term>
+<listitem>
+<simpara>
+        System-wide collection from all CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-e
+</term>
+<term>
+--expr
+</term>
+<term>
+--event
+</term>
+<listitem>
+<simpara>
+        List of syscalls and other perf events (tracepoints, HW cache events,
+        etc) to show. Globbing is supported, e.g.: "epoll_*", "<emphasis role="strong">msg</emphasis>", etc.
+        See <emphasis>perf list</emphasis> for a complete list of events.
+        Prefixing with ! shows all syscalls but the ones specified.  You may
+        need to escape it.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--filter=&lt;filter&gt;
+</term>
+<listitem>
+<simpara>
+        Event filter. This option should follow an event selector (-e) which
+        selects tracepoint event(s).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D msecs
+</term>
+<term>
+--delay msecs
+</term>
+<listitem>
+<simpara>
+After starting the program, wait msecs before measuring. This is useful to
+filter out the startup phase of the program, which is often very different.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-o
+</term>
+<term>
+--output=
+</term>
+<listitem>
+<simpara>
+        Output file name.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-p
+</term>
+<term>
+--pid=
+</term>
+<listitem>
+<simpara>
+        Record events on existing process ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-t
+</term>
+<term>
+--tid=
+</term>
+<listitem>
+<simpara>
+        Record events on existing thread ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-u
+</term>
+<term>
+--uid=
+</term>
+<listitem>
+<simpara>
+        Record events in threads owned by uid. Name or number.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-G
+</term>
+<term>
+--cgroup
+</term>
+<listitem>
+<simpara>
+        Record events in threads in a cgroup.
+</simpara>
+<literallayout class="monospaced">Look for cgroups to set at the /sys/fs/cgroup/perf_event directory, then
+remove the /sys/fs/cgroup/perf_event/ part and try:</literallayout>
+<literallayout class="monospaced">perf trace -G A -e sched:*switch</literallayout>
+<literallayout class="monospaced">Will set all raw_syscalls:sys_{enter,exit}, pgfault, vfs_getname, etc
+_and_ sched:sched_switch to the 'A' cgroup, while:</literallayout>
+<literallayout class="monospaced">perf trace -e sched:*switch -G A</literallayout>
+<literallayout class="monospaced">will only set the sched:sched_switch event to the 'A' cgroup, all the
+other events (raw_syscalls:sys_{enter,exit}, etc are left "without"
+a cgroup (on the root cgroup, sys wide, etc).</literallayout>
+<literallayout class="monospaced">Multiple cgroups:</literallayout>
+<literallayout class="monospaced">perf trace -G A -e sched:*switch -G B</literallayout>
+<literallayout class="monospaced">the syscall ones go to the 'A' cgroup, the sched:sched_switch goes
+to the 'B' cgroup.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--filter-pids=
+</term>
+<listitem>
+<simpara>
+        Filter out events for these pids and for <emphasis>trace</emphasis> itself (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Increase the verbosity level.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--no-inherit
+</term>
+<listitem>
+<simpara>
+        Child tasks do not inherit counters.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-m
+</term>
+<term>
+--mmap-pages=
+</term>
+<listitem>
+<simpara>
+        Number of mmap data pages (must be a power of two) or size
+        specification with appended unit character - B/K/M/G. The
+        size is rounded up to have nearest pages power of two value.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C
+</term>
+<term>
+--cpu
+</term>
+<listitem>
+<simpara>
+Collect samples only on the list of CPUs provided. Multiple CPUs can be provided as a
+comma-separated list with no space: 0,1. Ranges of CPUs are specified with -: 0-2.
+In per-thread mode with inheritance mode on (default), Events are captured only when
+the thread executes on the designated CPUs. Default is to monitor all CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--duration
+</term>
+<listitem>
+<simpara>
+        Show only events that had a duration greater than N.M ms.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--sched
+</term>
+<listitem>
+<simpara>
+        Accrue thread runtime and provide a summary at the end of the session.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--failure
+</term>
+<listitem>
+<simpara>
+        Show only syscalls that failed, i.e. that returned &lt; 0.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input
+</term>
+<listitem>
+<simpara>
+        Process events from a given perf data file.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-T
+</term>
+<term>
+--time
+</term>
+<listitem>
+<simpara>
+        Print full timestamp rather time relative to first sample.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--comm
+</term>
+<listitem>
+<simpara>
+        Show process COMM right beside its ID, on by default, disable with --no-comm.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-s
+</term>
+<term>
+--summary
+</term>
+<listitem>
+<simpara>
+        Show only a summary of syscalls by thread with min, max, and average times
+    (in msec) and relative stddev.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-S
+</term>
+<term>
+--with-summary
+</term>
+<listitem>
+<simpara>
+        Show all syscalls followed by a summary by thread with min, max, and
+    average times (in msec) and relative stddev.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--errno-summary
+</term>
+<listitem>
+<simpara>
+        To be used with -s or -S, to show stats for the errnos experienced by
+        syscalls, using only this option will trigger --summary.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--tool_stats
+</term>
+<listitem>
+<simpara>
+        Show tool stats such as number of times fd&#8594;pathname was discovered thru
+        hooking the open syscall return + vfs_getname or via reading /proc/pid/fd, etc.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t complain, do it.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-F=[all|min|maj]
+</term>
+<term>
+--pf=[all|min|maj]
+</term>
+<listitem>
+<simpara>
+        Trace pagefaults. Optionally, you can specify whether you want minor,
+        major or all pagefaults. Default value is maj.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--syscalls
+</term>
+<listitem>
+<simpara>
+        Trace system calls. This options is enabled by default, disable with
+        --no-syscalls.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--call-graph [mode,type,min[,limit],order[,key][,branch]]
+</term>
+<listitem>
+<simpara>
+        Setup and enable call-graph (stack chain/backtrace) recording.
+        See <literal>--call-graph</literal> section in perf-record and perf-report
+        man pages for details. The ones that are most useful in <emphasis>perf trace</emphasis>
+        are <emphasis>dwarf</emphasis> and <emphasis>lbr</emphasis>, where available, try: <emphasis>perf trace --call-graph dwarf</emphasis>.
+</simpara>
+<literallayout class="monospaced">Using this will, for the root user, bump the value of --mmap-pages to 4
+times the maximum for non-root users, based on the kernel.perf_event_mlock_kb
+sysctl. This is done only if the user doesn't specify a --mmap-pages value.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--kernel-syscall-graph
+</term>
+<listitem>
+<simpara>
+         Show the kernel callchains on the syscall exit path.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--max-events=N
+</term>
+<listitem>
+<simpara>
+        Stop after processing N events. Note that strace-like events are considered
+        only at exit time or when a syscall is interrupted, i.e. in those cases this
+        option is equivalent to the number of lines printed.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--switch-on EVENT_NAME
+</term>
+<listitem>
+<simpara>
+        Only consider events after this event is found.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--switch-off EVENT_NAME
+</term>
+<listitem>
+<simpara>
+        Stop considering events after this event is found.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--show-on-off-events
+</term>
+<listitem>
+<simpara>
+        Show the --switch-on/off events too.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--max-stack
+</term>
+<listitem>
+<simpara>
+        Set the stack depth limit when parsing the callchain, anything
+        beyond the specified depth will be ignored. Note that at this point
+        this is just about the presentation part, i.e. the kernel is still
+        not limiting, the overhead of callchains needs to be set via the
+        knobs in --call-graph dwarf.
+</simpara>
+<literallayout class="monospaced">Implies '--call-graph dwarf' when --call-graph not present on the
+command line, on systems where DWARF unwinding was built in.</literallayout>
+<literallayout class="monospaced">Default: /proc/sys/kernel/perf_event_max_stack when present for
+         live sessions (without --input/-i), 127 otherwise.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--min-stack
+</term>
+<listitem>
+<simpara>
+        Set the stack depth limit when parsing the callchain, anything
+        below the specified depth will be ignored. Disabled by default.
+</simpara>
+<literallayout class="monospaced">Implies '--call-graph dwarf' when --call-graph not present on the
+command line, on systems where DWARF unwinding was built in.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--print-sample
+</term>
+<listitem>
+<simpara>
+        Print the PERF_RECORD_SAMPLE PERF_SAMPLE_ info for the
+        raw_syscalls:sys_{enter,exit} tracepoints, for debugging.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--proc-map-timeout
+</term>
+<listitem>
+<simpara>
+        When processing pre-existing threads /proc/XXX/mmap, it may take a long time,
+        because the file may be huge. A time out is needed in such cases.
+        This option sets the time out limit. The default value is 500 ms.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--sort-events
+</term>
+<listitem>
+<simpara>
+        Do sorting on batches of events, use when noticing out of order events that
+        may happen, for instance, when a thread gets migrated to a different CPU
+        while processing a syscall.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--libtraceevent_print
+</term>
+<listitem>
+<simpara>
+        Use libtraceevent to print tracepoint arguments. By default <emphasis>perf trace</emphasis> uses
+        the same beautifiers used in the strace-like enter+exit lines to augment the
+        tracepoint arguments.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--map-dump
+</term>
+<listitem>
+<simpara>
+        Dump BPF maps setup by events passed via -e, for instance the augmented_raw_syscalls
+        living in tools/perf/examples/bpf/augmented_raw_syscalls.c. For now this
+        dumps just boolean map values and integer keys, in time this will print in hex
+        by default and use BTF when available, as well as use functions to do pretty
+        printing using the existing <emphasis>perf trace</emphasis> syscall arg beautifiers to map integer
+        arguments to strings (pid to comm, syscall id to syscall name, etc).
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_pagefaults">
+<title>PAGEFAULTS</title>
+<simpara>When tracing pagefaults, the format of the trace is as follows:</simpara>
+<simpara>&lt;min|maj&gt;fault [&lt;ip.symbol&gt;+&lt;ip.offset&gt;] &#8658; &lt;<ulink url="mailto:addr.dso@addr.offset">addr.dso@addr.offset</ulink>&gt; (&lt;map type&gt;&lt;addr level&gt;).</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+min/maj indicates whether fault event is minor or major;
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+ip.symbol shows symbol for instruction pointer (the code that generated the
+  fault); if no debug symbols available, perf trace will print raw IP;
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+addr.dso shows DSO for the faulted address;
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+map type is either <emphasis>d</emphasis> for non-executable maps or <emphasis>x</emphasis> for executable maps;
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+addr level is either <emphasis>k</emphasis> for kernel dso or <emphasis>.</emphasis> for user dso.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>For symbols resolution you may need to install debugging symbols.</simpara>
+<simpara>Please be aware that duration is currently always 0 and doesn&#8217;t reflect actual
+time it took for fault to be handled!</simpara>
+<simpara>When --verbose specified, perf trace tries to print all available information
+for both IP and fault address in the form of <ulink url="mailto:dso@symbol">dso@symbol</ulink>+offset.</simpara>
+</refsect1>
+<refsect1 id="_examples">
+<title>EXAMPLES</title>
+<simpara>Trace only major pagefaults:</simpara>
+<literallayout class="monospaced">$ perf trace --no-syscalls -F</literallayout>
+<simpara>Trace syscalls, major and minor pagefaults:</simpara>
+<literallayout class="monospaced">$ perf trace -F all</literallayout>
+<literallayout class="monospaced">1416.547 ( 0.000 ms): python/20235 majfault [CRYPTO_push_info_+0x0] =&gt; /lib/x86_64-linux-gnu/libcrypto.so.1.0.0@0x61be0 (x.)</literallayout>
+<literallayout class="monospaced">As you can see, there was major pagefault in python process, from
+CRYPTO_push_info_ routine which faulted somewhere in libcrypto.so.</literallayout>
+<simpara>Trace the first 4 open, openat or open_by_handle_at syscalls (in the future more syscalls may match here):</simpara>
+<literallayout class="monospaced">$ perf trace -e open* --max-events 4
+[root@jouet perf]# trace -e open* --max-events 4
+2272.992 ( 0.037 ms): gnome-shell/1370 openat(dfd: CWD, filename: /proc/self/stat) = 31
+2277.481 ( 0.139 ms): gnome-shell/3039 openat(dfd: CWD, filename: /proc/self/stat) = 65
+3026.398 ( 0.076 ms): gnome-shell/3039 openat(dfd: CWD, filename: /proc/self/stat) = 65
+4294.665 ( 0.015 ms): sed/15879 openat(dfd: CWD, filename: /etc/ld.so.cache, flags: CLOEXEC) = 3
+$</literallayout>
+<simpara>Trace the first minor page fault when running a workload:</simpara>
+<literallayout class="monospaced"># perf trace -F min --max-stack=7 --max-events 1 sleep 1
+   0.000 ( 0.000 ms): sleep/18006 minfault [__clear_user+0x1a] =&gt; 0x5626efa56080 (?k)
+                                     __clear_user ([kernel.kallsyms])
+                                     load_elf_binary ([kernel.kallsyms])
+                                     search_binary_handler ([kernel.kallsyms])
+                                     __do_execve_file.isra.33 ([kernel.kallsyms])
+                                     __x64_sys_execve ([kernel.kallsyms])
+                                     do_syscall_64 ([kernel.kallsyms])
+                                     entry_SYSCALL_64 ([kernel.kallsyms])
+#</literallayout>
+<simpara>Trace the next min page page fault to take place on the first CPU:</simpara>
+<literallayout class="monospaced"># perf trace -F min --call-graph=dwarf --max-events 1 --cpu 0
+   0.000 ( 0.000 ms): Web Content/17136 minfault [js::gc::Chunk::fetchNextDecommittedArena+0x4b] =&gt; 0x7fbe6181b000 (?.)
+                                     js::gc::FreeSpan::initAsEmpty (inlined)
+                                     js::gc::Arena::setAsNotAllocated (inlined)
+                                     js::gc::Chunk::fetchNextDecommittedArena (/usr/lib64/firefox/libxul.so)
+                                     js::gc::Chunk::allocateArena (/usr/lib64/firefox/libxul.so)
+                                     js::gc::GCRuntime::allocateArena (/usr/lib64/firefox/libxul.so)
+                                     js::gc::ArenaLists::allocateFromArena (/usr/lib64/firefox/libxul.so)
+                                     js::gc::GCRuntime::tryNewTenuredThing&lt;JSString, (js::AllowGC)1&gt; (inlined)
+                                     js::AllocateString&lt;JSString, (js::AllowGC)1&gt; (/usr/lib64/firefox/libxul.so)
+                                     js::Allocate&lt;JSThinInlineString, (js::AllowGC)1&gt; (inlined)
+                                     JSThinInlineString::new_&lt;(js::AllowGC)1&gt; (inlined)
+                                     AllocateInlineString&lt;(js::AllowGC)1, unsigned char&gt; (inlined)
+                                     js::ConcatStrings&lt;(js::AllowGC)1&gt; (/usr/lib64/firefox/libxul.so)
+                                     [0x18b26e6bc2bd] (/tmp/perf-17136.map)
+#</literallayout>
+<simpara>Trace the next two sched:sched_switch events, four block:*_plug events, the
+next block:*_unplug and the next three net:*dev_queue events, this last one
+with a backtrace of at most 16 entries, system wide:</simpara>
+<literallayout class="monospaced"># perf trace -e sched:*switch/nr=2/,block:*_plug/nr=4/,block:*_unplug/nr=1/,net:*dev_queue/nr=3,max-stack=16/
+   0.000 :0/0 sched:sched_switch:swapper/2:0 [120] S ==&gt; rcu_sched:10 [120]
+   0.015 rcu_sched/10 sched:sched_switch:rcu_sched:10 [120] R ==&gt; swapper/2:0 [120]
+ 254.198 irq/50-iwlwifi/680 net:net_dev_queue:dev=wlp3s0 skbaddr=0xffff93498051f600 len=66
+                                     __dev_queue_xmit ([kernel.kallsyms])
+ 273.977 :0/0 net:net_dev_queue:dev=wlp3s0 skbaddr=0xffff93498051f600 len=78
+                                     __dev_queue_xmit ([kernel.kallsyms])
+ 274.007 :0/0 net:net_dev_queue:dev=wlp3s0 skbaddr=0xffff93498051ff00 len=78
+                                     __dev_queue_xmit ([kernel.kallsyms])
+2930.140 kworker/u16:58/2722 block:block_plug:[kworker/u16:58]
+2930.162 kworker/u16:58/2722 block:block_unplug:[kworker/u16:58] 1
+4466.094 jbd2/dm-2-8/748 block:block_plug:[jbd2/dm-2-8]
+8050.123 kworker/u16:30/2694 block:block_plug:[kworker/u16:30]
+8050.271 kworker/u16:30/2694 block:block_plug:[kworker/u16:30]
+#</literallayout>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-script</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

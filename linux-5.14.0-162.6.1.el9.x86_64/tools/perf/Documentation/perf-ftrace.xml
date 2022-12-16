@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-ftrace</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-ftrace</refname>
+  <refpurpose>simple wrapper for kernel's ftrace functionality</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf ftrace</emphasis> &lt;command&gt;</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>The <emphasis>perf ftrace</emphasis> command is a simple wrapper of kernel&#8217;s ftrace
+functionality.  It only supports single thread tracing currently and
+just reads trace_pipe in text and then write it to stdout.</simpara>
+<simpara>The following options apply to perf ftrace.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-t
+</term>
+<term>
+--tracer=
+</term>
+<listitem>
+<simpara>
+        Tracer to use when neither -G nor -F option is not
+        specified: function_graph or function.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Increase the verbosity level.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-F
+</term>
+<term>
+--funcs
+</term>
+<listitem>
+<simpara>
+        List available functions to trace. It accepts a pattern to
+        only list interested functions.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-p
+</term>
+<term>
+--pid=
+</term>
+<listitem>
+<simpara>
+        Trace on existing process id (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--tid=
+</term>
+<listitem>
+<simpara>
+        Trace on existing thread id (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D
+</term>
+<term>
+--delay
+</term>
+<listitem>
+<simpara>
+        Time (ms) to wait before starting tracing after program start.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-a
+</term>
+<term>
+--all-cpus
+</term>
+<listitem>
+<simpara>
+        Force system-wide collection.  Scripts run without a &lt;command&gt;
+        normally use -a by default, while scripts run with a &lt;command&gt;
+        normally don&#8217;t - this option allows the latter to be run in
+        system-wide mode.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C
+</term>
+<term>
+--cpu=
+</term>
+<listitem>
+<simpara>
+        Only trace for the list of CPUs provided.  Multiple CPUs can
+        be provided as a comma separated list with no space like: 0,1.
+        Ranges of CPUs are specified with -: 0-2.
+        Default is to trace on all online CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-m
+</term>
+<term>
+--buffer-size
+</term>
+<listitem>
+<simpara>
+        Set the size of per-cpu tracing buffer, &lt;size&gt; is expected to
+        be a number with appended unit character - B/K/M/G.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--inherit
+</term>
+<listitem>
+<simpara>
+        Trace children processes spawned by our target.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-T
+</term>
+<term>
+--trace-funcs=
+</term>
+<listitem>
+<simpara>
+        Select function tracer and set function filter on the given
+        function (or a glob pattern). Multiple functions can be given
+        by using this option more than once. The function argument also
+        can be a glob pattern. It will be passed to <emphasis>set_ftrace_filter</emphasis>
+        in tracefs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-N
+</term>
+<term>
+--notrace-funcs=
+</term>
+<listitem>
+<simpara>
+        Select function tracer and do not trace functions given by the
+        argument.  Like -T option, this can be used more than once to
+        specify multiple functions (or glob patterns).  It will be
+        passed to <emphasis>set_ftrace_notrace</emphasis> in tracefs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--func-opts
+</term>
+<listitem>
+<simpara>
+        List of options allowed to set:
+          call-graph - Display kernel stack trace for function tracer.
+          irq-info   - Display irq context info for function tracer.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-G
+</term>
+<term>
+--graph-funcs=
+</term>
+<listitem>
+<simpara>
+        Select function_graph tracer and set graph filter on the given
+        function (or a glob pattern). This is useful to trace for
+        functions executed from the given function. This can be used more
+        than once to specify multiple functions. It will be passed to
+        <emphasis>set_graph_function</emphasis> in tracefs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-g
+</term>
+<term>
+--nograph-funcs=
+</term>
+<listitem>
+<simpara>
+        Select function_graph tracer and set graph notrace filter on the
+        given function (or a glob pattern). Like -G option, this is useful
+        for the function_graph tracer only and disables tracing for function
+        executed from the given function. This can be used more than once to
+        specify multiple functions. It will be passed to <emphasis>set_graph_notrace</emphasis>
+        in tracefs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--graph-opts
+</term>
+<listitem>
+<simpara>
+        List of options allowed to set:
+          nosleep-time - Measure on-CPU time only for function_graph tracer.
+          noirqs       - Ignore functions that happen inside interrupt.
+          verbose      - Show process names, PIDs, timestamps, etc.
+          thresh=&lt;n&gt;   - Setup trace duration threshold in microseconds.
+          depth=&lt;n&gt;    - Set max depth for function graph tracer to follow.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-trace</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

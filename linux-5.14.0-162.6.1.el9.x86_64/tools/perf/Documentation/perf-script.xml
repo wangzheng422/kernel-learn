@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-script</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-script</refname>
+  <refpurpose>Read perf.data (created by perf record) and display trace output</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf script</emphasis> [&lt;options&gt;]
+<emphasis>perf script</emphasis> [&lt;options&gt;] record &lt;script&gt; [&lt;record-options&gt;] &lt;command&gt;
+<emphasis>perf script</emphasis> [&lt;options&gt;] report &lt;script&gt; [script-args]
+<emphasis>perf script</emphasis> [&lt;options&gt;] &lt;script&gt; &lt;required-script-args&gt; [&lt;record-options&gt;] &lt;command&gt;
+<emphasis>perf script</emphasis> [&lt;options&gt;] &lt;top-script&gt; [script-args]</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>This command reads the input file and displays the trace recorded.</simpara>
+<simpara>There are several variants of perf script:</simpara>
+<literallayout class="monospaced">'perf script' to see a detailed trace of the workload that was
+recorded.</literallayout>
+<literallayout class="monospaced">You can also run a set of pre-canned scripts that aggregate and
+summarize the raw trace data in various ways (the list of scripts is
+available via 'perf script -l').  The following variants allow you to
+record and run those scripts:</literallayout>
+<literallayout class="monospaced">'perf script record &lt;script&gt; &lt;command&gt;' to record the events required
+for 'perf script report'.  &lt;script&gt; is the name displayed in the
+output of 'perf script --list' i.e. the actual script name minus any
+language extension.  If &lt;command&gt; is not specified, the events are
+recorded using the -a (system-wide) 'perf record' option.</literallayout>
+<literallayout class="monospaced">'perf script report &lt;script&gt; [args]' to run and display the results
+of &lt;script&gt;.  &lt;script&gt; is the name displayed in the output of 'perf
+script --list' i.e. the actual script name minus any language
+extension.  The perf.data output from a previous run of 'perf script
+record &lt;script&gt;' is used and should be present for this command to
+succeed.  [args] refers to the (mainly optional) args expected by
+the script.</literallayout>
+<literallayout class="monospaced">'perf script &lt;script&gt; &lt;required-script-args&gt; &lt;command&gt;' to both
+record the events required for &lt;script&gt; and to run the &lt;script&gt;
+using 'live-mode' i.e. without writing anything to disk.  &lt;script&gt;
+is the name displayed in the output of 'perf script --list' i.e. the
+actual script name minus any language extension.  If &lt;command&gt; is
+not specified, the events are recorded using the -a (system-wide)
+'perf record' option.  If &lt;script&gt; has any required args, they
+should be specified before &lt;command&gt;.  This mode doesn't allow for
+optional script args to be specified; if optional script args are
+desired, they can be specified using separate 'perf script record'
+and 'perf script report' commands, with the stdout of the record step
+piped to the stdin of the report script, using the '-o -' and '-i -'
+options of the corresponding commands.</literallayout>
+<literallayout class="monospaced">'perf script &lt;top-script&gt;' to both record the events required for
+&lt;top-script&gt; and to run the &lt;top-script&gt; using 'live-mode'
+i.e. without writing anything to disk.  &lt;top-script&gt; is the name
+displayed in the output of 'perf script --list' i.e. the actual
+script name minus any language extension; a &lt;top-script&gt; is defined
+as any script name ending with the string 'top'.</literallayout>
+<literallayout class="monospaced">[&lt;record-options&gt;] can be passed to the record steps of 'perf script
+record' and 'live-mode' variants; this isn't possible however for
+&lt;top-script&gt; 'live-mode' or 'perf script report' variants.</literallayout>
+<literallayout class="monospaced">See the 'SEE ALSO' section for links to language-specific
+information on how to write and run your own trace scripts.</literallayout>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+&lt;command&gt;&#8230;
+</term>
+<listitem>
+<simpara>
+        Any command you can specify in a shell.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-D
+</term>
+<term>
+--dump-raw-trace=
+</term>
+<listitem>
+<simpara>
+        Display verbose dump of the trace data.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-L
+</term>
+<term>
+--Latency=
+</term>
+<listitem>
+<simpara>
+        Show latency attributes (irqs/preemption disabled, etc).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-l
+</term>
+<term>
+--list=
+</term>
+<listitem>
+<simpara>
+        Display a list of available trace scripts.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-s [<emphasis>lang</emphasis>]
+</term>
+<term>
+--script=
+</term>
+<listitem>
+<simpara>
+        Process trace data with the given script ([lang]:script[.ext]).
+        If the string <emphasis>lang</emphasis> is specified in place of a script name, a
+        list of supported languages will be displayed instead.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-g
+</term>
+<term>
+--gen-script=
+</term>
+<listitem>
+<simpara>
+        Generate perf-script.[ext] starter script for given language,
+        using current perf.data.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--dlfilter=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        Filter sample events using the given shared object file.
+        Refer <citerefentry>
+<refentrytitle>perf-dlfilter</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--dlarg=&lt;arg&gt;
+</term>
+<listitem>
+<simpara>
+        Pass <emphasis>arg</emphasis> as an argument to the dlfilter. --dlarg may be repeated
+        to add more arguments.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--list-dlfilters
+</term>
+<listitem>
+<simpara>
+        Display a list of available dlfilters. Use with option -v (must come
+        before option --list-dlfilters) to show long descriptions.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-a
+</term>
+<listitem>
+<simpara>
+        Force system-wide collection.  Scripts run without a &lt;command&gt;
+        normally use -a by default, while scripts run with a &lt;command&gt;
+        normally don&#8217;t - this option allows the latter to be run in
+        system-wide mode.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input=
+</term>
+<listitem>
+<simpara>
+        Input file name. (default: perf.data unless stdin is a fifo)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-d
+</term>
+<term>
+--debug-mode
+</term>
+<listitem>
+<simpara>
+        Do various checks like samples ordering and lost events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-F
+</term>
+<term>
+--fields
+</term>
+<listitem>
+<simpara>
+        Comma separated list of fields to print. Options are:
+        comm, tid, pid, time, cpu, event, trace, ip, sym, dso, addr, symoff,
+        srcline, period, iregs, uregs, brstack, brstacksym, flags, bpf-output,
+        brstackinsn, brstackoff, callindent, insn, insnlen, synth, phys_addr,
+        metric, misc, srccode, ipc, data_page_size, code_page_size, ins_lat.
+        Field list can be prepended with the type, trace, sw or hw,
+        to indicate to which event type the field list applies.
+        e.g., -F sw:comm,tid,time,ip,sym  and -F trace:time,cpu,trace
+</simpara>
+<literallayout class="monospaced">perf script -F &lt;fields&gt;</literallayout>
+<literallayout class="monospaced">is equivalent to:</literallayout>
+<literallayout class="monospaced">perf script -F trace:&lt;fields&gt; -F sw:&lt;fields&gt; -F hw:&lt;fields&gt;</literallayout>
+<literallayout class="monospaced">i.e., the specified fields apply to all event types if the type string
+is not given.</literallayout>
+<literallayout class="monospaced">In addition to overriding fields, it is also possible to add or remove
+fields from the defaults. For example</literallayout>
+<literallayout class="monospaced">-F -cpu,+insn</literallayout>
+<literallayout class="monospaced">removes the cpu field and adds the insn field. Adding/removing fields
+cannot be mixed with normal overriding.</literallayout>
+<literallayout class="monospaced">The arguments are processed in the order received. A later usage can
+reset a prior request. e.g.:</literallayout>
+<literallayout class="monospaced">-F trace: -F comm,tid,time,ip,sym</literallayout>
+<literallayout class="monospaced">The first -F suppresses trace events (field list is ""), but then the
+second invocation sets the fields to comm,tid,time,ip,sym. In this case a
+warning is given to the user:</literallayout>
+<literallayout class="monospaced">"Overriding previous field request for all events."</literallayout>
+<literallayout class="monospaced">Alternatively, consider the order:</literallayout>
+<literallayout class="monospaced">-F comm,tid,time,ip,sym -F trace:</literallayout>
+<literallayout class="monospaced">The first -F sets the fields for all events and the second -F
+suppresses trace events. The user is given a warning message about
+the override, and the result of the above is that only S/W and H/W
+events are displayed with the given fields.</literallayout>
+<literallayout class="monospaced">It's possible tp add/remove fields only for specific event type:</literallayout>
+<literallayout class="monospaced">-Fsw:-cpu,-period</literallayout>
+<literallayout class="monospaced">removes cpu and period from software events.</literallayout>
+<literallayout class="monospaced">For the 'wildcard' option if a user selected field is invalid for an
+event type, a message is displayed to the user that the option is
+ignored for that type. For example:</literallayout>
+<literallayout class="monospaced">$ perf script -F comm,tid,trace
+'trace' not valid for hardware events. Ignoring.
+'trace' not valid for software events. Ignoring.</literallayout>
+<literallayout class="monospaced">Alternatively, if the type is given an invalid field is specified it
+is an error. For example:</literallayout>
+<literallayout class="monospaced">perf script -v -F sw:comm,tid,trace
+'trace' not valid for software events.</literallayout>
+<literallayout class="monospaced">At this point usage is displayed, and perf-script exits.</literallayout>
+<literallayout class="monospaced">The flags field is synthesized and may have a value when Instruction
+Trace decoding. The flags are "bcrosyiABExgh" which stand for branch,
+call, return, conditional, system, asynchronous, interrupt,
+transaction abort, trace begin, trace end, in transaction, VM-Entry, and VM-Exit
+respectively. Known combinations of flags are printed more nicely e.g.
+"call" for "bc", "return" for "br", "jcc" for "bo", "jmp" for "b",
+"int" for "bci", "iret" for "bri", "syscall" for "bcs", "sysret" for "brs",
+"async" for "by", "hw int" for "bcyi", "tx abrt" for "bA", "tr strt" for "bB",
+"tr end" for "bE", "vmentry" for "bcg", "vmexit" for "bch".
+However the "x" flag will be displayed separately in those
+cases e.g. "jcc     (x)" for a condition branch within a transaction.</literallayout>
+<literallayout class="monospaced">The callindent field is synthesized and may have a value when
+Instruction Trace decoding. For calls and returns, it will display the
+name of the symbol indented with spaces to reflect the stack depth.</literallayout>
+<literallayout class="monospaced">When doing instruction trace decoding insn and insnlen give the
+instruction bytes and the instruction length of the current
+instruction.</literallayout>
+<literallayout class="monospaced">The synth field is used by synthesized events which may be created when
+Instruction Trace decoding.</literallayout>
+<literallayout class="monospaced">The ipc (instructions per cycle) field is synthesized and may have a value when
+Instruction Trace decoding.</literallayout>
+<literallayout class="monospaced">Finally, a user may not set fields to none for all event types.
+i.e., -F "" is not allowed.</literallayout>
+<literallayout class="monospaced">The brstack output includes branch related information with raw addresses using the
+/v/v/v/v/cycles syntax in the following order:
+FROM: branch source instruction
+TO  : branch target instruction
+M/P/-: M=branch target mispredicted or branch direction was mispredicted, P=target predicted or direction predicted, -=not supported
+X/- : X=branch inside a transactional region, -=not in transaction region or not supported
+A/- : A=TSX abort entry, -=not aborted region or not supported
+cycles</literallayout>
+<literallayout class="monospaced">The brstacksym is identical to brstack, except that the FROM and TO addresses are printed in a symbolic form if possible.</literallayout>
+<literallayout class="monospaced">When brstackinsn is specified the full assembler sequences of branch sequences for each sample
+is printed. This is the full execution path leading to the sample. This is only supported when the
+sample was recorded with perf record -b or -j any.</literallayout>
+<literallayout class="monospaced">The brstackoff field will print an offset into a specific dso/binary.</literallayout>
+<literallayout class="monospaced">With the metric option perf script can compute metrics for
+sampling periods, similar to perf stat. This requires
+specifying a group with multiple events defining metrics with the :S option
+for perf record. perf will sample on the first event, and
+print computed metrics for all the events in the group. Please note
+that the metric computed is averaged over the whole sampling
+period (since the last sample), not just for the sample point.</literallayout>
+<literallayout class="monospaced">For sample events it's possible to display misc field with -F +misc option,
+following letters are displayed for each bit:</literallayout>
+<literallayout class="monospaced">PERF_RECORD_MISC_KERNEL               K
+PERF_RECORD_MISC_USER                 U
+PERF_RECORD_MISC_HYPERVISOR           H
+PERF_RECORD_MISC_GUEST_KERNEL         G
+PERF_RECORD_MISC_GUEST_USER           g
+PERF_RECORD_MISC_MMAP_DATA*           M
+PERF_RECORD_MISC_COMM_EXEC            E
+PERF_RECORD_MISC_SWITCH_OUT           S
+PERF_RECORD_MISC_SWITCH_OUT_PREEMPT   Sp</literallayout>
+<literallayout class="monospaced">$ perf script -F +misc ...
+ sched-messaging  1414 K     28690.636582:       4590 cycles ...
+ sched-messaging  1407 U     28690.636600:     325620 cycles ...
+ sched-messaging  1414 K     28690.636608:      19473 cycles ...
+misc field ___________/</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-k
+</term>
+<term>
+--vmlinux=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        vmlinux pathname
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--kallsyms=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        kallsyms pathname
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--symfs=&lt;directory&gt;
+</term>
+<listitem>
+<simpara>
+        Look for files with symbols relative to this directory.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-G
+</term>
+<term>
+--hide-call-graph
+</term>
+<listitem>
+<simpara>
+        When printing symbols do not display call chain.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stop-bt
+</term>
+<listitem>
+<simpara>
+        Stop display of callgraph at these symbols
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-C
+</term>
+<term>
+--cpu
+</term>
+<listitem>
+<simpara>
+Only report samples for the list of CPUs provided. Multiple CPUs can
+        be provided as a comma-separated list with no space: 0,1. Ranges of
+        CPUs are specified with -: 0-2. Default is to report samples on all
+        CPUs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-c
+</term>
+<term>
+--comms=
+</term>
+<listitem>
+<simpara>
+        Only display events for these comms. CSV that understands
+        <ulink url="file://filename">file://filename</ulink> entries.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--pid=
+</term>
+<listitem>
+<simpara>
+        Only show events for given process ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--tid=
+</term>
+<listitem>
+<simpara>
+        Only show events for given thread ID (comma separated list).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-I
+</term>
+<term>
+--show-info
+</term>
+<listitem>
+<simpara>
+        Display extended information about the perf.data file. This adds
+        information which may be very large and thus may clutter the display.
+        It currently includes: cpu and numa topology of the host system.
+        It can only be used with the perf script report mode.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--show-kernel-path
+</term>
+<listitem>
+<simpara>
+        Try to resolve the path of [kernel.kallsyms]
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+<simpara>--show-task-events
+        Display task related events (e.g. FORK, COMM, EXIT).</simpara>
+<simpara>--show-mmap-events
+        Display mmap related events (e.g. MMAP, MMAP2).</simpara>
+<simpara>--show-namespace-events
+        Display namespace events i.e. events of type PERF_RECORD_NAMESPACES.</simpara>
+<simpara>--show-switch-events
+        Display context switch events i.e. events of type PERF_RECORD_SWITCH or
+        PERF_RECORD_SWITCH_CPU_WIDE.</simpara>
+<simpara>--show-lost-events
+        Display lost events i.e. events of type PERF_RECORD_LOST.</simpara>
+<simpara>--show-round-events
+        Display finished round events i.e. events of type PERF_RECORD_FINISHED_ROUND.</simpara>
+<simpara>--show-bpf-events
+        Display bpf events i.e. events of type PERF_RECORD_KSYMBOL and PERF_RECORD_BPF_EVENT.</simpara>
+<simpara>--show-cgroup-events
+        Display cgroup events i.e. events of type PERF_RECORD_CGROUP.</simpara>
+<simpara>--show-text-poke-events
+        Display text poke events i.e. events of type PERF_RECORD_TEXT_POKE and
+        PERF_RECORD_KSYMBOL.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+--demangle
+</term>
+<listitem>
+<simpara>
+        Demangle symbol names to human readable form. It&#8217;s enabled by default,
+        disable with --no-demangle.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--demangle-kernel
+</term>
+<listitem>
+<simpara>
+        Demangle kernel symbol names to human readable form (for C++ kernels).
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+<simpara>--header
+        Show perf.data header.</simpara>
+<simpara>--header-only
+        Show only perf.data header.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+--itrace
+</term>
+<listitem>
+<simpara>
+        Options for decoding instruction tracing data. The options are:
+</simpara>
+<literallayout class="monospaced">i       synthesize instructions events
+b       synthesize branches events (branch misses for Arm SPE)
+c       synthesize branches events (calls only)
+r       synthesize branches events (returns only)
+x       synthesize transactions events
+w       synthesize ptwrite events
+p       synthesize power events (incl. PSB events for Intel PT)
+o       synthesize other events recorded due to the use
+        of aux-output (refer to perf record)
+e       synthesize error events
+d       create a debug log
+f       synthesize first level cache events
+m       synthesize last level cache events
+M       synthesize memory events
+t       synthesize TLB events
+a       synthesize remote access events
+g       synthesize a call chain (use with i or x)
+G       synthesize a call chain on existing event records
+l       synthesize last branch entries (use with i or x)
+L       synthesize last branch entries on existing event records
+s       skip initial number of events
+q       quicker (less detailed) decoding
+A       approximate IPC
+Z       prefer to ignore timestamps (so-called "timeless" decoding)</literallayout>
+<literallayout class="monospaced">The default is all events i.e. the same as --itrace=ibxwpe,
+except for perf script where it is --itrace=ce</literallayout>
+<literallayout class="monospaced">In addition, the period (default 100000, except for perf script where it is 1)
+for instructions events can be specified in units of:</literallayout>
+<literallayout class="monospaced">i       instructions
+t       ticks
+ms      milliseconds
+us      microseconds
+ns      nanoseconds (default)</literallayout>
+<literallayout class="monospaced">Also the call chain size (default 16, max. 1024) for instructions or
+transactions events can be specified.</literallayout>
+<literallayout class="monospaced">Also the number of last branch entries (default 64, max. 1024) for
+instructions or transactions events can be specified.</literallayout>
+<literallayout class="monospaced">Similar to options g and l, size may also be specified for options G and L.
+On x86, note that G and L work poorly when data has been recorded with
+large PEBS. Refer linkperf:perf-intel-pt[1] man page for details.</literallayout>
+<literallayout class="monospaced">It is also possible to skip events generated (instructions, branches, transactions,
+ptwrite, power) at the beginning. This is useful to ignore initialization code.</literallayout>
+<literallayout class="monospaced">--itrace=i0nss1000000</literallayout>
+<literallayout class="monospaced">skips the first million instructions.</literallayout>
+<literallayout class="monospaced">The 'e' option may be followed by flags which affect what errors will or
+will not be reported. Each flag must be preceded by either '+' or '-'.
+The flags are:
+        o       overflow
+        l       trace data lost</literallayout>
+<literallayout class="monospaced">If supported, the 'd' option may be followed by flags which affect what
+debug messages will or will not be logged. Each flag must be preceded
+by either '+' or '-'. The flags are:
+        a       all perf events
+        o       output to stdout</literallayout>
+<literallayout class="monospaced">If supported, the 'q' option may be repeated to increase the effect.</literallayout>
+<literallayout class="monospaced">To disable decoding entirely, use --no-itrace.</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--full-source-path
+</term>
+<listitem>
+<simpara>
+        Show the full path for source files for srcline output.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--max-stack
+</term>
+<listitem>
+<simpara>
+        Set the stack depth limit when parsing the callchain, anything
+        beyond the specified depth will be ignored. This is a trade-off
+        between information loss and faster processing especially for
+        workloads that can have a very long callchain stack.
+        Note that when using the --itrace option the synthesized callchain size
+        will override this value if the synthesized callchain size is bigger.
+</simpara>
+<literallayout class="monospaced">Default: 127</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--ns
+</term>
+<listitem>
+<simpara>
+        Use 9 decimal places when displaying time (i.e. show the nanoseconds)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t do ownership validation.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--time
+</term>
+<listitem>
+<simpara>
+        Only analyze samples within given time window: &lt;start&gt;,&lt;stop&gt;. Times
+        have the format seconds.nanoseconds. If start is not given (i.e. time
+        string is <emphasis>,x.y</emphasis>) then analysis starts at the beginning of the file. If
+        stop time is not given (i.e. time string is <emphasis>x.y,</emphasis>) then analysis goes
+        to end of file. Multiple ranges can be separated by spaces, which
+        requires the argument to be quoted e.g. --time "1234.567,1234.789 1235,"
+</simpara>
+<literallayout class="monospaced">Also support time percent with multiple time ranges. Time string is
+'a%/n,b%/m,...' or 'a%-b%,c%-%d,...'.</literallayout>
+<literallayout class="monospaced">For example:
+Select the second 10% time slice:
+perf script --time 10%/2</literallayout>
+<literallayout class="monospaced">Select from 0% to 10% time slice:
+perf script --time 0%-10%</literallayout>
+<literallayout class="monospaced">Select the first and second 10% time slices:
+perf script --time 10%/1,10%/2</literallayout>
+<literallayout class="monospaced">Select from 0% to 10% and 30% to 40% slices:
+perf script --time 0%-10%,30%-40%</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--max-blocks
+</term>
+<listitem>
+<simpara>
+        Set the maximum number of program blocks to print with brstackinsn for
+        each sample.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--reltime
+</term>
+<listitem>
+<simpara>
+        Print time stamps relative to trace start.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--deltatime
+</term>
+<listitem>
+<simpara>
+        Print time stamps relative to previous event.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--per-event-dump
+</term>
+<listitem>
+<simpara>
+        Create per event files with a "perf.data.EVENT.dump" name instead of
+        printing to stdout, useful, for instance, for generating flamegraphs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--inline
+</term>
+<listitem>
+<simpara>
+        If a callgraph address belongs to an inlined function, the inline stack
+        will be printed. Each entry has function name and file/line. Enabled by
+        default, disable with --no-inline.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--insn-trace
+</term>
+<listitem>
+<simpara>
+        Show instruction stream for intel_pt traces. Combine with --xed to
+        show disassembly.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--xed
+</term>
+<listitem>
+<simpara>
+        Run xed disassembler on output. Requires installing the xed disassembler.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-S
+</term>
+<term>
+--symbols=symbol[,symbol&#8230;]
+</term>
+<listitem>
+<simpara>
+        Only consider the listed symbols. Symbols are typically a name
+        but they may also be hexadecimal address.
+</simpara>
+<literallayout class="monospaced">The hexadecimal address may be the start address of a symbol or
+any other address to filter the trace records</literallayout>
+<literallayout class="monospaced">For example, to select the symbol noploop or the address 0x4007a0:
+perf script --symbols=noploop,0x4007a0</literallayout>
+<literallayout class="monospaced">Support filtering trace records by symbol name, start address of
+symbol, any hexadecimal address and address range.</literallayout>
+<literallayout class="monospaced">The comparison order is:</literallayout>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+symbol name comparison
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+symbol start address comparison.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+any hexadecimal address comparison.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+address range comparison (see --addr-range).
+</simpara>
+</listitem>
+</orderedlist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--addr-range
+</term>
+<listitem>
+<simpara>
+       Use with -S or --symbols to list traced records within address range.
+</simpara>
+<literallayout class="monospaced">For example, to list the traced records within the address range
+[0x4007a0, 0x0x4007a9]:
+perf script -S 0x4007a0 --addr-range 10</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--dsos=
+</term>
+<listitem>
+<simpara>
+        Only consider symbols in these DSOs.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--call-trace
+</term>
+<listitem>
+<simpara>
+        Show call stream for intel_pt traces. The CPUs are interleaved, but
+        can be filtered with -C.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--call-ret-trace
+</term>
+<listitem>
+<simpara>
+        Show call and return stream for intel_pt traces.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--graph-function
+</term>
+<listitem>
+<simpara>
+        For itrace only show specified functions and their callees for
+        itrace. Multiple functions can be separated by comma.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--switch-on EVENT_NAME
+</term>
+<listitem>
+<simpara>
+        Only consider events after this event is found.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--switch-off EVENT_NAME
+</term>
+<listitem>
+<simpara>
+        Stop considering events after this event is found.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--show-on-off-events
+</term>
+<listitem>
+<simpara>
+        Show the --switch-on/off events too.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stitch-lbr
+</term>
+<listitem>
+<simpara>
+        Show callgraph with stitched LBRs, which may have more complete
+        callgraph. The perf.data file must have been obtained using
+        perf record --call-graph lbr.
+        Disabled by default. In common cases with call stack overflows,
+        it can recreate better call stacks than the default lbr call stack
+        output. But this approach is not full proof. There can be cases
+        where it creates incorrect call stacks from incorrect matches.
+        The known limitations include exception handing such as
+        setjmp/longjmp will have calls/returns not match.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-script-perl</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-script-python</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-intel-pt</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>perf-dlfilter</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>

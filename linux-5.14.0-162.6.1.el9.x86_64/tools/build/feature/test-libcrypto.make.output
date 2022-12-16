@@ -1,0 +1,23 @@
+test-libcrypto.c: In function 'main':
+test-libcrypto.c:11:9: error: 'MD5_Init' is deprecated: Since OpenSSL 3.0 [-Werror=deprecated-declarations]
+   11 |         MD5_Init(&context);
+      |         ^~~~~~~~
+In file included from test-libcrypto.c:3:
+/usr/include/openssl/md5.h:49:27: note: declared here
+   49 | OSSL_DEPRECATEDIN_3_0 int MD5_Init(MD5_CTX *c);
+      |                           ^~~~~~~~
+test-libcrypto.c:12:9: error: 'MD5_Update' is deprecated: Since OpenSSL 3.0 [-Werror=deprecated-declarations]
+   12 |         MD5_Update(&context, &dat[0], sizeof(dat));
+      |         ^~~~~~~~~~
+In file included from test-libcrypto.c:3:
+/usr/include/openssl/md5.h:50:27: note: declared here
+   50 | OSSL_DEPRECATEDIN_3_0 int MD5_Update(MD5_CTX *c, const void *data, size_t len);
+      |                           ^~~~~~~~~~
+test-libcrypto.c:13:9: error: 'MD5_Final' is deprecated: Since OpenSSL 3.0 [-Werror=deprecated-declarations]
+   13 |         MD5_Final(&md[0], &context);
+      |         ^~~~~~~~~
+In file included from test-libcrypto.c:3:
+/usr/include/openssl/md5.h:51:27: note: declared here
+   51 | OSSL_DEPRECATEDIN_3_0 int MD5_Final(unsigned char *md, MD5_CTX *c);
+      |                           ^~~~~~~~~
+cc1: all warnings being treated as errors

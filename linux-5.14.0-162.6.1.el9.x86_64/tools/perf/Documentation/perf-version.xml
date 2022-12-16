@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-version</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-version</refname>
+  <refpurpose>display the version of perf binary</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<simpara><emphasis>perf version</emphasis> [--build-options]</simpara>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>With no options given, the <emphasis>perf version</emphasis> prints the perf version
+on the standard output.</simpara>
+<simpara>If the option <emphasis>--build-options</emphasis> is given, then the status of
+compiled-in libraries are printed on the standard output.</simpara>
+</refsect1>
+<refsect1 id="_options">
+<title>OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+--build-options
+</term>
+<listitem>
+<simpara>
+        Prints the status of compiled-in libraries on the
+        standard output.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+</refentry>

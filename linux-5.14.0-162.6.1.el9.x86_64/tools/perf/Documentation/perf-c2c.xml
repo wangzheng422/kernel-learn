@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<refentry>
+<refentryinfo><date></date></refentryinfo>
+<refmeta>
+<refentrytitle>perf-c2c</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">perf</refmiscinfo>
+<refmiscinfo class="version"></refmiscinfo>
+<refmiscinfo class="manual">perf Manual</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>perf-c2c</refname>
+  <refpurpose>Shared Data C2C/HITM Analyzer.</refpurpose>
+</refnamediv>
+<refsynopsisdiv id="_synopsis">
+<blockquote>
+<literallayout><emphasis>perf c2c record</emphasis> [&lt;options&gt;] &lt;command&gt;
+<emphasis>perf c2c record</emphasis> [&lt;options&gt;] -- [&lt;record command options&gt;] &lt;command&gt;
+<emphasis>perf c2c report</emphasis> [&lt;options&gt;]</literallayout>
+</blockquote>
+</refsynopsisdiv>
+<refsect1 id="_description">
+<title>DESCRIPTION</title>
+<simpara>C2C stands for Cache To Cache.</simpara>
+<simpara>The perf c2c tool provides means for Shared Data C2C/HITM analysis. It allows
+you to track down the cacheline contentions.</simpara>
+<simpara>On x86, the tool is based on load latency and precise store facility events
+provided by Intel CPUs. On PowerPC, the tool uses random instruction sampling
+with thresholding feature.</simpara>
+<simpara>These events provide:
+  - memory address of the access
+  - type of the access (load and store details)
+  - latency (in cycles) of the load access</simpara>
+<simpara>The c2c tool provide means to record this data and report back access details
+for cachelines with highest contention - highest number of HITM accesses.</simpara>
+<simpara>The basic workflow with this tool follows the standard record/report phase.
+User uses the record command to record events data and report command to
+display it.</simpara>
+</refsect1>
+<refsect1 id="_record_options">
+<title>RECORD OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-e
+</term>
+<term>
+--event=
+</term>
+<listitem>
+<simpara>
+        Select the PMU event. Use <emphasis>perf c2c record -e list</emphasis>
+        to list available events.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose (show counter open errors, etc).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-l
+</term>
+<term>
+--ldlat
+</term>
+<listitem>
+<simpara>
+        Configure mem-loads latency. (x86 only)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-k
+</term>
+<term>
+--all-kernel
+</term>
+<listitem>
+<simpara>
+        Configure all used events to run in kernel space.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-u
+</term>
+<term>
+--all-user
+</term>
+<listitem>
+<simpara>
+        Configure all used events to run in user space.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_report_options">
+<title>REPORT OPTIONS</title>
+<variablelist>
+<varlistentry>
+<term>
+-k
+</term>
+<term>
+--vmlinux=&lt;file&gt;
+</term>
+<listitem>
+<simpara>
+        vmlinux pathname
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-v
+</term>
+<term>
+--verbose
+</term>
+<listitem>
+<simpara>
+        Be more verbose (show counter open errors, etc).
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-i
+</term>
+<term>
+--input
+</term>
+<listitem>
+<simpara>
+        Specify the input file to process.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-N
+</term>
+<term>
+--node-info
+</term>
+<listitem>
+<simpara>
+        Show extra node info in report (see NODE INFO section)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-c
+</term>
+<term>
+--coalesce
+</term>
+<listitem>
+<simpara>
+        Specify sorting fields for single cacheline display.
+        Following fields are available: tid,pid,iaddr,dso
+        (see COALESCE)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-g
+</term>
+<term>
+--call-graph
+</term>
+<listitem>
+<simpara>
+        Setup callchains parameters.
+        Please refer to perf-report man page for details.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stdio
+</term>
+<listitem>
+<simpara>
+        Force the stdio output (see STDIO OUTPUT)
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stats
+</term>
+<listitem>
+<simpara>
+        Display only statistic tables and force stdio mode.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--full-symbols
+</term>
+<listitem>
+<simpara>
+        Display full length of symbols.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--no-source
+</term>
+<listitem>
+<simpara>
+        Do not display Source:Line column.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--show-all
+</term>
+<listitem>
+<simpara>
+        Show all captured HITM lines, with no regard to HITM % 0.0005 limit.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-f
+</term>
+<term>
+--force
+</term>
+<listitem>
+<simpara>
+        Don&#8217;t do ownership validation.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+-d
+</term>
+<term>
+--display
+</term>
+<listitem>
+<simpara>
+        Switch to HITM type (rmt, lcl) to display and sort on. Total HITMs as default.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+--stitch-lbr
+</term>
+<listitem>
+<simpara>
+        Show callgraph with stitched LBRs, which may have more complete
+        callgraph. The perf.data file must have been obtained using
+        perf c2c record --call-graph lbr.
+        Disabled by default. In common cases with call stack overflows,
+        it can recreate better call stacks than the default lbr call stack
+        output. But this approach is not full proof. There can be cases
+        where it creates incorrect call stacks from incorrect matches.
+        The known limitations include exception handing such as
+        setjmp/longjmp will have calls/returns not match.
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+<refsect1 id="_c2c_record">
+<title>C2C RECORD</title>
+<simpara>The perf c2c record command setup options related to HITM cacheline analysis
+and calls standard perf record command.</simpara>
+<simpara>Following perf record options are configured by default:
+(check perf record man page for details)</simpara>
+<literallayout class="monospaced">-W,-d,--phys-data,--sample-cpu</literallayout>
+<simpara>Unless specified otherwise with <emphasis>-e</emphasis> option, following events are monitored by
+default on x86:</simpara>
+<literallayout class="monospaced">cpu/mem-loads,ldlat=30/P
+cpu/mem-stores/P</literallayout>
+<simpara>and following on PowerPC:</simpara>
+<literallayout class="monospaced">cpu/mem-loads/
+cpu/mem-stores/</literallayout>
+<simpara>User can pass any <emphasis>perf record</emphasis> option behind <emphasis>--</emphasis> mark, like (to enable
+callchains and system wide monitoring):</simpara>
+<literallayout class="monospaced">$ perf c2c record -- -g -a</literallayout>
+<simpara>Please check RECORD OPTIONS section for specific c2c record options.</simpara>
+</refsect1>
+<refsect1 id="_c2c_report">
+<title>C2C REPORT</title>
+<simpara>The perf c2c report command displays shared data analysis.  It comes in two
+display modes: stdio and tui (default).</simpara>
+<simpara>The report command workflow is following:
+  - sort all the data based on the cacheline address
+  - store access details for each cacheline
+  - sort all cachelines based on user settings
+  - display data</simpara>
+<simpara>In general perf report output consist of 2 basic views:
+  1) most expensive cachelines list
+  2) offsets details for each cacheline</simpara>
+<simpara>For each cacheline in the 1) list we display following data:
+(Both stdio and TUI modes follow the same fields output)</simpara>
+<literallayout class="monospaced">Index
+- zero based index to identify the cacheline</literallayout>
+<literallayout class="monospaced">Cacheline
+- cacheline address (hex number)</literallayout>
+<literallayout class="monospaced">Rmt/Lcl Hitm
+- cacheline percentage of all Remote/Local HITM accesses</literallayout>
+<literallayout class="monospaced">LLC Load Hitm - Total, LclHitm, RmtHitm
+- count of Total/Local/Remote load HITMs</literallayout>
+<literallayout class="monospaced">Total records
+- sum of all cachelines accesses</literallayout>
+<literallayout class="monospaced">Total loads
+- sum of all load accesses</literallayout>
+<literallayout class="monospaced">Total stores
+- sum of all store accesses</literallayout>
+<literallayout class="monospaced">Store Reference - L1Hit, L1Miss
+  L1Hit - store accesses that hit L1
+  L1Miss - store accesses that missed L1</literallayout>
+<literallayout class="monospaced">Core Load Hit - FB, L1, L2
+- count of load hits in FB (Fill Buffer), L1 and L2 cache</literallayout>
+<literallayout class="monospaced">LLC Load Hit - LlcHit, LclHitm
+- count of LLC load accesses, includes LLC hits and LLC HITMs</literallayout>
+<literallayout class="monospaced">RMT Load Hit - RmtHit, RmtHitm
+- count of remote load accesses, includes remote hits and remote HITMs</literallayout>
+<literallayout class="monospaced">Load Dram - Lcl, Rmt
+- count of local and remote DRAM accesses</literallayout>
+<simpara>For each offset in the 2) list we display following data:</simpara>
+<literallayout class="monospaced">HITM - Rmt, Lcl
+- % of Remote/Local HITM accesses for given offset within cacheline</literallayout>
+<literallayout class="monospaced">Store Refs - L1 Hit, L1 Miss
+- % of store accesses that hit/missed L1 for given offset within cacheline</literallayout>
+<literallayout class="monospaced">Data address - Offset
+- offset address</literallayout>
+<literallayout class="monospaced">Pid
+- pid of the process responsible for the accesses</literallayout>
+<literallayout class="monospaced">Tid
+- tid of the process responsible for the accesses</literallayout>
+<literallayout class="monospaced">Code address
+- code address responsible for the accesses</literallayout>
+<literallayout class="monospaced">cycles - rmt hitm, lcl hitm, load
+  - sum of cycles for given accesses - Remote/Local HITM and generic load</literallayout>
+<literallayout class="monospaced">cpu cnt
+  - number of cpus that participated on the access</literallayout>
+<literallayout class="monospaced">Symbol
+  - code symbol related to the 'Code address' value</literallayout>
+<literallayout class="monospaced">Shared Object
+  - shared object name related to the 'Code address' value</literallayout>
+<literallayout class="monospaced">Source:Line
+  - source information related to the 'Code address' value</literallayout>
+<literallayout class="monospaced">Node
+  - nodes participating on the access (see NODE INFO section)</literallayout>
+</refsect1>
+<refsect1 id="_node_info">
+<title>NODE INFO</title>
+<simpara>The <emphasis>Node</emphasis> field displays nodes that accesses given cacheline
+offset. Its output comes in 3 flavors:
+  - node IDs separated by <emphasis>,</emphasis>
+  - node IDs with stats for each ID, in following format:
+      Node{cpus %hitms %stores}
+  - node IDs with list of affected CPUs in following format:
+      Node{cpu list}</simpara>
+<simpara>User can switch between above flavors with -N option or
+use <emphasis>n</emphasis> key to interactively switch in TUI mode.</simpara>
+</refsect1>
+<refsect1 id="_coalesce">
+<title>COALESCE</title>
+<simpara>User can specify how to sort offsets for cacheline.</simpara>
+<simpara>Following fields are available and governs the final
+output fields set for cacheline offsets output:</simpara>
+<literallayout class="monospaced">tid   - coalesced by process TIDs
+pid   - coalesced by process PIDs
+iaddr - coalesced by code address, following fields are displayed:
+           Code address, Code symbol, Shared Object, Source line
+dso   - coalesced by shared object</literallayout>
+<simpara>By default the coalescing is setup with <emphasis>pid,iaddr</emphasis>.</simpara>
+</refsect1>
+<refsect1 id="_stdio_output">
+<title>STDIO OUTPUT</title>
+<simpara>The stdio output displays data on standard output.</simpara>
+<simpara>Following tables are displayed:
+  Trace Event Information
+  - overall statistics of memory accesses</simpara>
+<literallayout class="monospaced">Global Shared Cache Line Event Information
+- overall statistics on shared cachelines</literallayout>
+<literallayout class="monospaced">Shared Data Cache Line Table
+- list of most expensive cachelines</literallayout>
+<literallayout class="monospaced">Shared Cache Line Distribution Pareto
+- list of all accessed offsets for each cacheline</literallayout>
+</refsect1>
+<refsect1 id="_tui_output">
+<title>TUI OUTPUT</title>
+<simpara>The TUI output provides interactive interface to navigate
+through cachelines list and to display offset details.</simpara>
+<simpara>For details please refer to the help window by pressing <emphasis>?</emphasis> key.</simpara>
+</refsect1>
+<refsect1 id="_credits">
+<title>CREDITS</title>
+<simpara>Although Don Zickus, Dick Fowles and Joe Mario worked together
+to get this implemented, we got lots of early help from Arnaldo
+Carvalho de Melo, Stephane Eranian, Jiri Olsa and Andi Kleen.</simpara>
+</refsect1>
+<refsect1 id="_c2c_blog">
+<title>C2C BLOG</title>
+<simpara>Check Joe&#8217;s blog on c2c tool for detailed use case explanation:
+  <ulink url="https://joemario.github.io/blog/2016/09/01/c2c-blog/">https://joemario.github.io/blog/2016/09/01/c2c-blog/</ulink></simpara>
+</refsect1>
+<refsect1 id="_see_also">
+<title>SEE ALSO</title>
+<simpara><citerefentry>
+<refentrytitle>perf-record</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry>, <citerefentry>
+<refentrytitle>perf-mem</refentrytitle><manvolnum>1</manvolnum>
+</citerefentry></simpara>
+</refsect1>
+</refentry>
